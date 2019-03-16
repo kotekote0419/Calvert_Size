@@ -5,7 +5,7 @@ def out_sheet(flow_data, case):
     wb = px.Workbook()
 
     for i in range(case):
-        if case == 0:
+        if i == 0:
             ws = wb.active
             ws.title = 'CASE-1'
         else:
