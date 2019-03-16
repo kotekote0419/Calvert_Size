@@ -3,7 +3,7 @@ from un_uniform_flow_class import DataPlot
 import tkinter as tk
 import tkinter.filedialog as fd
 import un_uniform_flow_def
-import un_uniform_flow_Excel
+# import un_uniform_flow_Excel
 import itertools
 
 # 定数の整理--------------------
@@ -32,46 +32,45 @@ while True:
 h1 = float(input("Start Water Level(m) ?: "))
 af = float(input("Afford Level(m) ?: "))
 cases = int(input("抽出するケース数を指定: "))
-plt_bool = True
 # 組み合わせの格納
 calv_num = [i for i in range(len(calv))]
 calv_num_all = list(itertools.combinations_with_replacement(calv_num, len(flow_data)))
 # Main Calculate ******************************************
-req = []
+flow = UnUniformFlowSquare()
+flow_plot = DataPlot()
 for cnt in range(len(calv_num_all)):
-    flow = UnUniformFlowSquare(g, n, calv, flow_data, calv_num_all[cnt], sl, h1)
+    flow_cal = flow.wl_cal(
+        g, n, calv, flow_data, calv_num_all[cnt], sl, h1, af
+    )
     # グラフ描画開始---------------------------------------------------
-    xh, yh, xu, yu = un_uniform_flow_def.flow_plot(flow.flow_data, flow.h1, sl)
-    if plt_bool:
-        flow_plot = DataPlot(xu, yu, xh, yh, af)
-        plt_bool = False
-    else:
-        flow_plot.update_plot(xu, yu, xh, yh)
-    # グラフ描画終了---------------------------------------------------
-    if flow.flow_data[len(flow_data)-1][4] < -1*af:
-        req.append(calv_num_all[cnt])
-    print(flow.flow_data)
+    xh, yh, xu, yu = un_uniform_flow_def.flow_plot(flow_cal, flow.h1, sl)
+    flow_plot.update_plot(xu, yu, xh, yh, cnt, calv_num_all)
 # 最適化検討***********************************************************
-if len(req) == 0:
+if len(flow.calv_num_opt) == 0:
     print("条件を満たすサイズがありません")
 else:
     # コストの算出
-    req_cost = [0 for i in range(len(req))]
-    for i in range(len(req)):
-        for j in range(len(req[i])):
-            req_cost[i] += cost[req[i][j]] * float(flow_data[j][2])
-    # 検討ケースの抽出　※リストに格納するべき！！！！！！！！
-    if cases < len(req):
-        cases = len(req)
+    condition_cost = [0 for i in range(len(flow.calv_num_opt))]
+    for i in range(len(flow.calv_num_opt)):
+        for j in range(len(flow.calv_num_opt[i])):
+            condition_cost[i] += cost[flow.calv_num_opt[i][j]] * float(flow_data[j][2])
+    # 検討ケースの抽出
+    if cases > len(flow.calv_num_opt):
+        cases = len(flow.calv_num_opt)
+    # 最適ケースの再計算
+    print("Results-------------------------------------------")
+    print("<{0}>の組み合わせの内、余裕{1}mを満たす組み合わせは<{2}>.".format(
+        len(calv_num_all), af, len(flow.calv_num_opt)
+    ))
     print("最適条件より{0}ケース抽出".format(cases))
     for case in range(cases):
-        flow = UnUniformFlowSquare(g, n, calv, flow_data, req[req_cost.index(min(req_cost))], sl, h1)
+        flow_cal = flow.wl_cal(
+            g, n, calv, flow_data,
+            flow.calv_num_opt[condition_cost.index(min(condition_cost))], sl, h1, af
+        )
+        xh, yh, xu, yu = un_uniform_flow_def.flow_plot(
+            flow_cal, flow.h1, sl
+        )
+        condition_cost.pop(condition_cost.index(min(condition_cost)))
         # グラフ描画
-        xh, yh, xu, yu = un_uniform_flow_def.flow_plot(flow.flow_data, flow.h1, sl)
-        flow_plot.update_plot_save(xu, yu, xh, yh)
-        print(flow.flow_data)
-        #un_uniform_flow_Excel.out_sheet(flow.flow_data, case)
-        req_cost.pop(req_cost.index(min(req_cost)))
-    print("<{0}>の組み合わせの内、余裕{1}mを満たす組み合わせは<{2}>.".format(
-        len(calv_num_all), af, len(req)
-    ))
+        flow_plot.plot_save(xu, yu, xh, yh, af, case)
