@@ -71,7 +71,7 @@ else:
     ))
     print("最適条件より{0}ケース抽出".format(cases))
     for case in range(cases):
-        flow_cal = flow.wl_cal(
+        flow_cal, flow_detail = flow.wl_cal_detail(
             g, n, calv, flow_data,
             flow.calv_num_opt[condition_cost.index(min(condition_cost))], sl, h1, af
         )
@@ -81,6 +81,6 @@ else:
         flow_plot.plot_save(xu, yu, xh, yh, af, case)
         # Excel - Output
         if case == 0:
-            xl = un_uniform_flow_Excel.xl_sheet(flow_cal, case, d_t)
+            xl = un_uniform_flow_Excel.xl_sheet(flow_cal, flow_detail, case, d_t)
         else:
             xl = un_uniform_flow_Excel.xl_update(xl, flow_cal, case, d_t)

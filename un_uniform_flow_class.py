@@ -18,12 +18,16 @@ class UnUniformFlowSquare:
             # 区間の算出
             span_n = int(tl / sl)
             span_end = float(tl % sl)
+            if span_n == 0:
+                span_st = span_end
+            else:
+                span_st = sl
 
             # 下流スパンの不等流計算
             if i == 0:
                 h1 = un_uniform_flow_def.lim_depth(g, q, b, h1)
                 flow_data[i][3] = h1 - b
-                h2 = un_uniform_flow_def.wl_cal(g, n, q, b, sl, h1)
+                h2 = un_uniform_flow_def.wl_cal(g, n, q, b, span_st, h1)
                 self.h1 = h2 - b
             else:
                 h1 = flow_data[i-1][4] + b
@@ -31,15 +35,71 @@ class UnUniformFlowSquare:
                 flow_data[i][3] = h1 - b
                 h2 = un_uniform_flow_def.wl_cal(g, n, q, b, sl, h1)
             # 中間スパンの不等流計算
-            for j in range(span_n-1):
-                h2 = un_uniform_flow_def.wl_cal(g, n, q, b, sl, h2)
-            # 上流スパンの不等流計算
-            h2 = un_uniform_flow_def.wl_cal(g, n, q, b, span_end, h2)
+            if span_n <= 1:
+                pass
+            else:
+                for j in range(span_n-2):
+                    h2 = un_uniform_flow_def.wl_cal(g, n, q, b, sl, h2)
+                # 上流スパンの不等流計算
+                if span_end == 0:
+                    span_end = sl
+                h2 = un_uniform_flow_def.wl_cal(g, n, q, b, span_end, h2)
             flow_data[i][4] = h2 - b
             flow_data[i][5] = -1 * b
         if flow_data[-1][4] < -1*af:
             self.calv_num_opt.append(calv_num)
         return flow_data
+
+    def wl_cal_detail(self, g, n, calv, flow_data, calv_num, sl, h1, af):
+        for i in range(len(flow_data)):
+            q = float(flow_data[i][1])
+            tl = float(flow_data[i][2])
+            b = calv[calv_num[i]]
+
+            # 区間の算出
+            span_n = int(tl / sl)
+            span_end = float(tl % sl)
+            if span_n == 0:
+                span_st = span_end
+            else:
+                span_st = sl
+
+            # 下流スパンの不等流計算
+            if i == 0:
+                h1 = un_uniform_flow_def.lim_depth(g, q, b, h1)
+                flow_data[i][3] = h1 - b
+                h2 = un_uniform_flow_def.wl_cal(g, n, q, b, span_st, h1)
+                flow_detail = [[sl], [h1-b], [h2-b]]
+                self.h1 = h2 - b
+            else:
+                h1 = flow_data[i-1][4] + b
+                h1 = un_uniform_flow_def.lim_depth(g, q, b, h1)
+                flow_data[i][3] = h1 - b
+                h2 = un_uniform_flow_def.wl_cal(g, n, q, b, sl, h1)
+                flow_detail[0].append(sl + flow_detail[0][-1])
+                flow_detail[1].append(h1 - b)
+                flow_detail[2].append(h2 - b)
+            # 中間スパンの不等流計算
+            if span_n <= 1:
+                pass
+            else:
+                for j in range(span_n-2):
+                    flow_detail[0].append(sl + flow_detail[0][-1])
+                    flow_detail[1].append(h2 - b)
+                    h2 = un_uniform_flow_def.wl_cal(g, n, q, b, sl, h2)
+                    flow_detail[2].append(h2 - b)
+                # 上流スパンの不等流計算
+                if span_end == 0:
+                    span_end = sl
+                flow_detail[0].append(sl + flow_detail[0][-1])
+                flow_detail[1].append(h2 - b)
+                h2 = un_uniform_flow_def.wl_cal(g, n, q, b, span_end, h2)
+                flow_detail[2].append(h2 - b)
+            flow_data[i][4] = h2 - b
+            flow_data[i][5] = -1 * b
+            if flow_data[-1][4] < -1 * af:
+                self.calv_num_opt.append(calv_num)
+        return flow_data, flow_detail
 
 
 class DataPlot:
