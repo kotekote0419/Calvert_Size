@@ -1,3 +1,6 @@
+from PIL import Image
+
+
 def flow_data(file):
     input_data = []
     if file:
@@ -81,3 +84,16 @@ def wl_cal(g, n, q, b, sl, h1):
         else:
             h2 = h3
     return h3
+
+
+def image_resize(file):
+    img = Image.open(file)
+    img_crop = img.crop((60, 0, img.width-60, 320))
+    img_resize = img_crop.resize(
+        (int(img_crop.width*0.57), int(img_crop.height*0.57)), Image.LANCZOS
+    )
+    img_resize.save("resize-01.png")
+
+
+if __name__ == '__main__':
+    image_resize("Calvert1.png")
