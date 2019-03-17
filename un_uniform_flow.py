@@ -1,10 +1,17 @@
 from un_uniform_flow_class import UnUniformFlowSquare
 from un_uniform_flow_class import DataPlot
+import un_uniform_flow_Excel
 import tkinter as tk
 import tkinter.filedialog as fd
 import un_uniform_flow_def
-# import un_uniform_flow_Excel
 import itertools
+import datetime
+
+# 時間の取得
+d = datetime.datetime.now()
+d_t = "{0}{1:0=2}{2:0=2}{3:0=2}{4:0=2}".format(
+    d.year, d.month, d.day, d.hour, d.minute
+)
 
 # 定数の整理--------------------
 g = 9.8
@@ -68,9 +75,12 @@ else:
             g, n, calv, flow_data,
             flow.calv_num_opt[condition_cost.index(min(condition_cost))], sl, h1, af
         )
-        xh, yh, xu, yu = un_uniform_flow_def.flow_plot(
-            flow_cal, flow.h1, sl
-        )
+        xh, yh, xu, yu = un_uniform_flow_def.flow_plot(flow_cal, flow.h1, sl)
         condition_cost.pop(condition_cost.index(min(condition_cost)))
         # グラフ描画
         flow_plot.plot_save(xu, yu, xh, yh, af, case)
+        # Excel - Output
+        if case == 0:
+            xl = un_uniform_flow_Excel.xl_sheet(flow_cal, case, d_t)
+        else:
+            xl = un_uniform_flow_Excel.xl_update(xl, flow_cal, case, d_t)
