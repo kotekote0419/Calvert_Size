@@ -4,6 +4,7 @@ import openpyxl as px
 def xl_sheet(flow_data, flow_detail, case, d_t):
     wb = px.Workbook()
     ws = wb.create_sheet(title='CASE-{0}'.format(case+1))
+    ws.page_setup.scale = 80
     ws.cell(1, 1).value = 'Un-uniform flow Calculation: CASE-{0}'.format(case+1)
     ws.cell(3, 2).value = 'Q(m3/min)'
     ws.cell(3, 3).value = 'L(m)'

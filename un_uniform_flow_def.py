@@ -88,12 +88,12 @@ def wl_cal(g, n, q, b, sl, h1):
 
 def image_resize(file):
     img = Image.open(file)
-    img_crop = img.crop((60, 0, img.width-60, 320))
-    img_resize = img_crop.resize(
-        (int(img_crop.width*0.57), int(img_crop.height*0.57)), Image.LANCZOS
+    #img_crop = img.crop((60, 0, img.width-60, 320))
+    img_resize = img.resize(
+        (int(img.width*0.05), int(img.height*0.05))
     )
-    img_resize.save("resize-01.png")
+    img_resize.save("resize-01.png", quality=100)
 
 
-if __name__ == '__main__':
-    image_resize("Calvert1.png")
+#if __name__ == '__main__':
+#    image_resize("Calvert1.png")

@@ -153,6 +153,6 @@ class DataPlot:
             ann2 = self.ax.annotate('{0:.3f}'.format(y[1]), (x[1], y[1]))
             ann_list.append(ann1)
             ann_list.append(ann2)
-        plt.savefig("Calvert{0}".format(case+1))
+        plt.savefig("Calvert{0}".format(case+1), dpi=80)
         for a in ann_list:
             a.remove()
