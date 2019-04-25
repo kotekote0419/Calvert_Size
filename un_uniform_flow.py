@@ -16,8 +16,8 @@ d_t = "{0}{1:0=2}{2:0=2}{3:0=2}{4:0=2}".format(
 # 定数の整理--------------------
 g = 9.8
 n = 0.015
-calv = [0.7, 0.6, 0.5, 0.4]
-cost = [7000, 6000, 5000, 4000]   # m単価
+calv = [0.6, 0.45, 0.36, 0.3, 0.24]
+cost = [7850, 4790, 3560, 3280, 1980]   # m単価
 
 # Inputファイルの選択--------------------
 root = tk.Tk()
@@ -84,3 +84,4 @@ else:
             xl = un_uniform_flow_Excel.xl_sheet(flow_cal, flow_detail, case, d_t)
         else:
             xl = un_uniform_flow_Excel.xl_update(xl, flow_cal, case, d_t)
+cl = input("any key")

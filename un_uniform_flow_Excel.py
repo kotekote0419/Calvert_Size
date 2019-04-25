@@ -19,7 +19,6 @@ def xl_sheet(flow_data, flow_detail, case, d_t):
     img = px.drawing.image.Image('Calvert{0}.png'.format(case+1))
     ws.add_image(img, 'A{0}'.format(len(flow_data)+1))
     wb.save('xlSheet'+d_t+'.xls')
-    print(ws.page_margins.left)
     return wb
 
 
